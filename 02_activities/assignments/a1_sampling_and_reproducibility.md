@@ -10,12 +10,32 @@ Modify the number of repetitions in the simulation to 100 (from the original 100
 
 Alter the code so that it is reproducible. Describe the changes you made to the code and how they affected the reproducibility of the script file. The output does not need to match Whitby’s original blogpost/graphs, it just needs to produce the same output when run multiple times
 
-# Author: YOUR NAME
+# Author: Crystal Chen
 
-```
-Please write your explanation here...
+### Instances of sampling
+1. `infected_indices = np.random.choice(ppl.index, size=int(len(ppl) * ATTACK_RATE), replace=False)`: 
+    - PURPOSE: identify a subsent of people from a population of 1000 who get COVID-19
+    - SAMPLING FRAME: the entire population
+    - SAMPLE SIZE: 10% of the population (i.e., 100 people)
+    - SAMPLING METHOD: simple random sampling
+    - DISTRIBUTION: uniform distribution as everyone has an equal chance of being infected (i.e., chosen)
+2. `ppl.loc[ppl['infected'], 'traced'] = np.random.rand(sum(ppl['infected'])) < TRACE_SUCCESS`:
+    - PURPOSE: to identify from among the infected individuals who receive primary contact tracing
+    - SAMPLING FRAME: infected individuals
+    - SAMPLE SIZE: 20% of infected individuals
+    - SAMPLING METHOD: each infected person receives a value from 0 to 1 drawn from a uniform distribution. Those who have a value less than 0.2 (i.e., trace success) is tracked.   
+    - DISTRIBUTION: uniform distribution since infected individuals have equal likelihood of being picked for primary tracing
 
-```
+### Judging reproducibility 
+The script is able to reproduce similar results for the distribution of the trueproportion (i.e., infection from weddings in blue) as the distribution is centered around 0.2 just like the true proportion distribution in the original blogpost. However, the script doesn’t seem to produce similar results for the distribution of observed proportions (i.e., traced to weddings in red) because while this distribution is centered somewhat lower than 0.2 with a long left tail (i.e. right-skewed), the distribution of observed proportions in the original blogpost was left skewed. However, the script still manages to highlight how contact tracing can lead to an observed distribution of proportions that is not reflective of the true distribution. 
+
+### Modifying m=1000 to m=100
+There are significant changes to both the true (blue) and observed (red) proportion distributions each time the script is run. The true distribution sometimes is more heavily clustered around 0.2 and sometimes less. Similarly, the observed distribution is sometimes more clustered around 0.15-0.2 and other times, less so. 
+
+### Changing script to make results reproducible
+Note: I am modifying the original script so m=1000 instead of m=100. 
+
+The only change I made was to add `np.random.seed(0)` before the code that generates 1000 simulations (i.e. `results = [simulate_event(m) for m in range(1000)]`). This ensures that when random sampling occurs, it always generates the same set of random samples between different executions of the script, leading to reproducible results. 
 
 
 ## Criteria
